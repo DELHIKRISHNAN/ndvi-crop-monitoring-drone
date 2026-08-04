@@ -28,16 +28,17 @@ from __future__ import annotations
 import math
 
 import rclpy
-from rclpy.node import Node
 from geometry_msgs.msg import Twist
+from rclpy.node import Node
 from sensor_msgs.msg import Imu, NavSatFix
 
 
 class PIDController:
     """Textbook PID with anti-windup clamping."""
 
-    def __init__(self, kp: float = 1.0, ki: float = 0.0, kd: float = 0.0,
-                 output_limits: tuple = (-1.0, 1.0)):
+    def __init__(
+        self, kp: float = 1.0, ki: float = 0.0, kd: float = 0.0, output_limits: tuple = (-1.0, 1.0)
+    ):
         self.kp = kp
         self.ki = ki
         self.kd = kd
@@ -96,16 +97,24 @@ class PIDTuningNode(Node):
 
         # Build PID controllers from params
         self.roll_pid = PIDController(
-            self._p("kp_roll"), self._p("ki_roll"), self._p("kd_roll"),
+            self._p("kp_roll"),
+            self._p("ki_roll"),
+            self._p("kd_roll"),
         )
         self.pitch_pid = PIDController(
-            self._p("kp_pitch"), self._p("ki_pitch"), self._p("kd_pitch"),
+            self._p("kp_pitch"),
+            self._p("ki_pitch"),
+            self._p("kd_pitch"),
         )
         self.yaw_pid = PIDController(
-            self._p("kp_yaw"), self._p("ki_yaw"), self._p("kd_yaw"),
+            self._p("kp_yaw"),
+            self._p("ki_yaw"),
+            self._p("kd_yaw"),
         )
         self.alt_pid = PIDController(
-            self._p("kp_altitude"), self._p("ki_altitude"), self._p("kd_altitude"),
+            self._p("kp_altitude"),
+            self._p("ki_altitude"),
+            self._p("kd_altitude"),
             output_limits=(-2.0, 2.0),
         )
 
@@ -173,10 +182,10 @@ class PIDTuningNode(Node):
 
         # Publish
         twist = Twist()
-        twist.linear.x = pitch_cmd    # forward/back
-        twist.linear.y = roll_cmd     # left/right
-        twist.linear.z = alt_cmd      # up/down
-        twist.angular.z = yaw_cmd     # yaw rotation
+        twist.linear.x = pitch_cmd  # forward/back
+        twist.linear.y = roll_cmd  # left/right
+        twist.linear.z = alt_cmd  # up/down
+        twist.angular.z = yaw_cmd  # yaw rotation
         self._cmd_pub.publish(twist)
 
 

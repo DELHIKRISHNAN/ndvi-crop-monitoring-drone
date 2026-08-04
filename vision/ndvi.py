@@ -15,10 +15,10 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-
 # ---------------------------------------------------------------------------
 # Core computation
 # ---------------------------------------------------------------------------
+
 
 def compute_ndvi(
     nir_frame: np.ndarray,
@@ -62,6 +62,7 @@ def compute_ndvi(
 # ---------------------------------------------------------------------------
 # Batch helpers
 # ---------------------------------------------------------------------------
+
 
 def compute_ndvi_stats(ndvi_array: np.ndarray) -> dict:
     """Return basic descriptive statistics for an NDVI array.

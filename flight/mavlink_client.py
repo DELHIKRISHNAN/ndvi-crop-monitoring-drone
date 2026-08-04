@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 import threading
 import time
-from typing import Callable, Optional
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 try:
     from pymavlink import mavutil  # type: ignore[import-untyped]
+
     _HAS_MAVLINK = True
 except ImportError:
     _HAS_MAVLINK = False
@@ -62,9 +63,9 @@ class MAVLinkClient:
 
         self._conn = None
         self._running = False
-        self._heartbeat_thread: Optional[threading.Thread] = None
+        self._heartbeat_thread: threading.Thread | None = None
         self._last_heartbeat: float = 0.0
-        self._on_link_lost: Optional[Callable] = None
+        self._on_link_lost: Callable | None = None
 
     # ------------------------------------------------------------------
     # Connection lifecycle
@@ -94,7 +95,9 @@ class MAVLinkClient:
         # Start background heartbeat sender + monitor
         self._running = True
         self._heartbeat_thread = threading.Thread(
-            target=self._heartbeat_loop, daemon=True, name="mavlink-heartbeat",
+            target=self._heartbeat_loop,
+            daemon=True,
+            name="mavlink-heartbeat",
         )
         self._heartbeat_thread.start()
 
@@ -152,7 +155,9 @@ class MAVLinkClient:
                 self._conn.mav.heartbeat_send(
                     mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                     mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-                    0, 0, 0,
+                    0,
+                    0,
+                    0,
                 )
 
             # Check for incoming heartbeat

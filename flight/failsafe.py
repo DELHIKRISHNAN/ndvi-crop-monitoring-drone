@@ -20,13 +20,14 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
 try:
     from pymavlink import mavutil  # type: ignore[import-untyped]
+
     _HAS_MAVLINK = True
 except ImportError:
     _HAS_MAVLINK = False
@@ -36,14 +37,16 @@ except ImportError:
 # Configuration
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class FailsafeConfig:
     """Tuneable failsafe thresholds."""
-    battery_voltage_min: float = 21.0       # 6S LiPo critical (~3.5V/cell)
-    battery_pct_min: int = 15               # percent
-    gps_min_fix_type: int = 3               # require at least 3D fix
-    heartbeat_timeout: float = 5.0          # seconds (mirrored from client)
-    check_interval: float = 1.0             # seconds between checks
+
+    battery_voltage_min: float = 21.0  # 6S LiPo critical (~3.5V/cell)
+    battery_pct_min: int = 15  # percent
+    gps_min_fix_type: int = 3  # require at least 3D fix
+    heartbeat_timeout: float = 5.0  # seconds (mirrored from client)
+    check_interval: float = 1.0  # seconds between checks
     # Geofence — bounding box (lat/lon min/max)
     geofence_enabled: bool = False
     geofence_lat_min: float = -90.0
@@ -55,6 +58,7 @@ class FailsafeConfig:
 # ---------------------------------------------------------------------------
 # Failsafe manager
 # ---------------------------------------------------------------------------
+
 
 class FailsafeManager:
     """Continuously checks vehicle state against safety thresholds.
@@ -76,7 +80,7 @@ class FailsafeManager:
         mavlink_client,
         telemetry_listener,
         config: FailsafeConfig | None = None,
-        on_failsafe: Optional[Callable[[str], None]] = None,
+        on_failsafe: Callable[[str], None] | None = None,
     ):
         from flight.mavlink_client import MAVLinkClient
         from flight.telemetry import TelemetryListener
@@ -86,7 +90,7 @@ class FailsafeManager:
         self.config = config or FailsafeConfig()
         self._on_failsafe = on_failsafe
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._triggered: set = set()  # avoid repeated triggers
 
         # Wire link-loss callback into the MAVLink client
@@ -99,7 +103,9 @@ class FailsafeManager:
     def start(self) -> None:
         self._running = True
         self._thread = threading.Thread(
-            target=self._loop, daemon=True, name="failsafe-monitor",
+            target=self._loop,
+            daemon=True,
+            name="failsafe-monitor",
         )
         self._thread.start()
         logger.info("Failsafe monitor started")
@@ -125,16 +131,11 @@ class FailsafeManager:
             ):
                 self._trigger("LOW_VOLTAGE")
 
-            if (
-                0 <= state.battery.remaining < self.config.battery_pct_min
-            ):
+            if 0 <= state.battery.remaining < self.config.battery_pct_min:
                 self._trigger("LOW_BATTERY_PCT")
 
             # --- GPS check -------------------------------------------------
-            if (
-                state.gps.fix_type > 0
-                and state.gps.fix_type < self.config.gps_min_fix_type
-            ):
+            if state.gps.fix_type > 0 and state.gps.fix_type < self.config.gps_min_fix_type:
                 self._trigger("GPS_DEGRADED")
 
             # --- Geofence check --------------------------------------------
@@ -163,7 +164,8 @@ class FailsafeManager:
         # Send MAV_CMD_NAV_RETURN_TO_LAUNCH (20)
         if _HAS_MAVLINK and self._client.is_connected:
             self._client.send_command_long(
-                mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH, [],
+                mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH,
+                [],
             )
 
         if self._on_failsafe:

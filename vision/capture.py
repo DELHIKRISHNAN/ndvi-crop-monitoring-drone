@@ -21,9 +21,8 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -35,6 +34,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 try:
     from picamera2 import Picamera2  # type: ignore[import-untyped]
+
     _HAS_PICAMERA2 = True
 except ImportError:
     _HAS_PICAMERA2 = False
@@ -42,6 +42,7 @@ except ImportError:
 
 try:
     import RPi.GPIO as GPIO  # type: ignore[import-untyped]
+
     _HAS_GPIO = True
 except ImportError:
     _HAS_GPIO = False
@@ -51,20 +52,23 @@ except ImportError:
 # Data containers
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class FramePair:
     """A co-registered pair of RGB and NIR frames."""
+
     rgb: np.ndarray
     nir: np.ndarray
-    timestamp: float          # time.time() epoch seconds
-    lat: Optional[float] = None
-    lon: Optional[float] = None
-    alt: Optional[float] = None
+    timestamp: float  # time.time() epoch seconds
+    lat: float | None = None
+    lon: float | None = None
+    alt: float | None = None
 
 
 # ---------------------------------------------------------------------------
 # Abstract capture interface
 # ---------------------------------------------------------------------------
+
 
 class DualCamera:
     """Manages a synchronised dual-camera rig (RGB + NIR)."""
@@ -74,7 +78,7 @@ class DualCamera:
         *,
         rgb_source: int | str = 0,
         nir_source: int | str = 1,
-        resolution: Tuple[int, int] = (640, 480),
+        resolution: tuple[int, int] = (640, 480),
         use_hw_trigger: bool = False,
         trigger_pin: int = 17,
     ):
@@ -173,7 +177,8 @@ class DualCamera:
 # Utility: save a frame pair to disk (for offline analysis / debugging)
 # ---------------------------------------------------------------------------
 
-def save_frame_pair(pair: FramePair, output_dir: Path) -> Tuple[Path, Path]:
+
+def save_frame_pair(pair: FramePair, output_dir: Path) -> tuple[Path, Path]:
     """Write RGB and NIR frames as PNG files with timestamp-based names."""
     output_dir.mkdir(parents=True, exist_ok=True)
     stem = f"{pair.timestamp:.6f}"

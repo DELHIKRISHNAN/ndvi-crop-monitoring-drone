@@ -12,9 +12,7 @@ from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
-    IncludeLaunchDescription,
 )
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -39,7 +37,9 @@ def generate_launch_description():
     # --- Gazebo Ignition ----------------------------------------------------
     gz_sim = ExecuteProcess(
         cmd=[
-            "gz", "sim", "-r",
+            "gz",
+            "sim",
+            "-r",
             LaunchConfiguration("world"),
         ],
         output="screen",
@@ -71,10 +71,12 @@ def generate_launch_description():
         ],
     )
 
-    return LaunchDescription([
-        world_arg,
-        use_sim_time_arg,
-        gz_sim,
-        ros_gz_bridge,
-        pid_node,
-    ])
+    return LaunchDescription(
+        [
+            world_arg,
+            use_sim_time_arg,
+            gz_sim,
+            ros_gz_bridge,
+            pid_node,
+        ]
+    )

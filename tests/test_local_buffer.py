@@ -4,8 +4,8 @@ Tests for backend/local_buffer.py
 """
 
 import time
+
 import pytest
-from pathlib import Path
 
 from backend.local_buffer import LocalBuffer
 
@@ -18,7 +18,6 @@ def buffer(tmp_path):
 
 
 class TestLocalBuffer:
-
     def test_insert_and_retrieve(self, buffer):
         data = {
             "lat": 28.6139,
