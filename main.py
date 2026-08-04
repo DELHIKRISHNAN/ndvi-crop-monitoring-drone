@@ -30,20 +30,21 @@ logger = logging.getLogger("main")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="NDVI Drone — Mission Controller")
-    parser.add_argument("--simulate", action="store_true",
-                        help="Run with simulated sensors and camera")
-    parser.add_argument("--ground-only", action="store_true",
-                        help="Soil sensors only, no flight")
-    parser.add_argument("--connection", default="/dev/ttyAMA0",
-                        help="MAVLink connection string")
-    parser.add_argument("--baud", type=int, default=921600,
-                        help="MAVLink baud rate")
-    parser.add_argument("--capture-interval", type=float, default=2.0,
-                        help="Seconds between NDVI captures")
-    parser.add_argument("--soil-interval", type=float, default=5.0,
-                        help="Seconds between soil sensor polls")
-    parser.add_argument("--backend-url", default="http://localhost:8000/api/readings",
-                        help="Backend sync endpoint")
+    parser.add_argument(
+        "--simulate", action="store_true", help="Run with simulated sensors and camera"
+    )
+    parser.add_argument("--ground-only", action="store_true", help="Soil sensors only, no flight")
+    parser.add_argument("--connection", default="/dev/ttyAMA0", help="MAVLink connection string")
+    parser.add_argument("--baud", type=int, default=921600, help="MAVLink baud rate")
+    parser.add_argument(
+        "--capture-interval", type=float, default=2.0, help="Seconds between NDVI captures"
+    )
+    parser.add_argument(
+        "--soil-interval", type=float, default=5.0, help="Seconds between soil sensor polls"
+    )
+    parser.add_argument(
+        "--backend-url", default="http://localhost:8000/api/readings", help="Backend sync endpoint"
+    )
     return parser.parse_args()
 
 
@@ -94,7 +95,8 @@ def run_mission(args):
             telemetry.start()
 
             failsafe = FailsafeManager(
-                mavlink, telemetry,
+                mavlink,
+                telemetry,
                 on_failsafe=lambda reason: logger.critical("FAILSAFE: %s", reason),
             )
             failsafe.start()
@@ -148,30 +150,35 @@ def run_mission(args):
                     rgb_path, nir_path = save_frame_pair(pair, output_dir)
 
                     # Buffer the reading
-                    buffer.insert_reading({
-                        "lat": lat,
-                        "lon": lon,
-                        "alt": alt,
-                        "ndvi_mean": stats["mean"],
-                        "ndvi_min": stats["min"],
-                        "ndvi_max": stats["max"],
-                        "soil_moisture": None,
-                        "soil_ph": None,
-                        "stress_zones": [
-                            {
-                                "label": z.label,
-                                "area_pixels": z.area_pixels,
-                                "mean_ndvi": z.mean_ndvi,
-                            }
-                            for z in zones
-                        ],
-                        "frame_path": str(rgb_path),
-                        "timestamp": now,
-                    })
+                    buffer.insert_reading(
+                        {
+                            "lat": lat,
+                            "lon": lon,
+                            "alt": alt,
+                            "ndvi_mean": stats["mean"],
+                            "ndvi_min": stats["min"],
+                            "ndvi_max": stats["max"],
+                            "soil_moisture": None,
+                            "soil_ph": None,
+                            "stress_zones": [
+                                {
+                                    "label": z.label,
+                                    "area_pixels": z.area_pixels,
+                                    "mean_ndvi": z.mean_ndvi,
+                                }
+                                for z in zones
+                            ],
+                            "frame_path": str(rgb_path),
+                            "timestamp": now,
+                        }
+                    )
 
                     logger.info(
                         "NDVI captured — mean=%.3f, zones=%d, pos=(%.6f, %.6f)",
-                        stats["mean"], len(zones), lat, lon,
+                        stats["mean"],
+                        len(zones),
+                        lat,
+                        lon,
                     )
                 except Exception as e:
                     logger.error("Capture failed: %s", e)
@@ -181,19 +188,23 @@ def run_mission(args):
                 last_soil = now
                 try:
                     soil = soil_reader.poll(lat=lat, lon=lon)
-                    buffer.insert_reading({
-                        "lat": lat,
-                        "lon": lon,
-                        "alt": alt,
-                        "soil_moisture": soil.moisture,
-                        "soil_ph": soil.ph,
-                        "soil_temperature": soil.temperature,
-                        "soil_humidity": soil.humidity,
-                        "timestamp": now,
-                    })
+                    buffer.insert_reading(
+                        {
+                            "lat": lat,
+                            "lon": lon,
+                            "alt": alt,
+                            "soil_moisture": soil.moisture,
+                            "soil_ph": soil.ph,
+                            "soil_temperature": soil.temperature,
+                            "soil_humidity": soil.humidity,
+                            "timestamp": now,
+                        }
+                    )
                     logger.info(
                         "Soil — moisture=%.1f%%, pH=%.2f, temp=%.1f°C",
-                        soil.moisture, soil.ph, soil.temperature,
+                        soil.moisture,
+                        soil.ph,
+                        soil.temperature,
                     )
                 except Exception as e:
                     logger.error("Soil read failed: %s", e)

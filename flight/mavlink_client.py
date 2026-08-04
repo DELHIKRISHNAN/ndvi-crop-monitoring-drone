@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 try:
     from pymavlink import mavutil  # type: ignore[import-untyped]
+
     _HAS_MAVLINK = True
 except ImportError:
     _HAS_MAVLINK = False
@@ -94,7 +95,9 @@ class MAVLinkClient:
         # Start background heartbeat sender + monitor
         self._running = True
         self._heartbeat_thread = threading.Thread(
-            target=self._heartbeat_loop, daemon=True, name="mavlink-heartbeat",
+            target=self._heartbeat_loop,
+            daemon=True,
+            name="mavlink-heartbeat",
         )
         self._heartbeat_thread.start()
 
@@ -152,7 +155,9 @@ class MAVLinkClient:
                 self._conn.mav.heartbeat_send(
                     mavutil.mavlink.MAV_TYPE_ONBOARD_CONTROLLER,
                     mavutil.mavlink.MAV_AUTOPILOT_INVALID,
-                    0, 0, 0,
+                    0,
+                    0,
+                    0,
                 )
 
             # Check for incoming heartbeat

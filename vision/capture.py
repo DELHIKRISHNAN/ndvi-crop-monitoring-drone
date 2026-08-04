@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 try:
     from picamera2 import Picamera2  # type: ignore[import-untyped]
+
     _HAS_PICAMERA2 = True
 except ImportError:
     _HAS_PICAMERA2 = False
@@ -42,6 +43,7 @@ except ImportError:
 
 try:
     import RPi.GPIO as GPIO  # type: ignore[import-untyped]
+
     _HAS_GPIO = True
 except ImportError:
     _HAS_GPIO = False
@@ -51,12 +53,14 @@ except ImportError:
 # Data containers
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class FramePair:
     """A co-registered pair of RGB and NIR frames."""
+
     rgb: np.ndarray
     nir: np.ndarray
-    timestamp: float          # time.time() epoch seconds
+    timestamp: float  # time.time() epoch seconds
     lat: Optional[float] = None
     lon: Optional[float] = None
     alt: Optional[float] = None
@@ -65,6 +69,7 @@ class FramePair:
 # ---------------------------------------------------------------------------
 # Abstract capture interface
 # ---------------------------------------------------------------------------
+
 
 class DualCamera:
     """Manages a synchronised dual-camera rig (RGB + NIR)."""
@@ -172,6 +177,7 @@ class DualCamera:
 # ---------------------------------------------------------------------------
 # Utility: save a frame pair to disk (for offline analysis / debugging)
 # ---------------------------------------------------------------------------
+
 
 def save_frame_pair(pair: FramePair, output_dir: Path) -> Tuple[Path, Path]:
     """Write RGB and NIR frames as PNG files with timestamp-based names."""

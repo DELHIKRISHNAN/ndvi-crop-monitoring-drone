@@ -18,7 +18,6 @@ def buffer(tmp_path):
 
 
 class TestLocalBuffer:
-
     def test_insert_and_retrieve(self, buffer):
         data = {
             "lat": 28.6139,

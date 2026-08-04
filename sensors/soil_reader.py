@@ -31,12 +31,14 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 try:
     import smbus2  # type: ignore[import-untyped]
+
     _HAS_SMBUS = True
 except ImportError:
     _HAS_SMBUS = False
 
 try:
     import Adafruit_ADS1x15  # type: ignore[import-untyped]
+
     _HAS_ADS = True
 except ImportError:
     _HAS_ADS = False
@@ -46,14 +48,16 @@ except ImportError:
 # Data container
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SoilReading:
     """A single snapshot of soil sensor values."""
-    moisture: float         # volumetric water content (%)
-    ph: float               # pH scale 0-14
-    temperature: float      # °C
-    humidity: float          # relative humidity (%)
-    timestamp: float        # epoch seconds
+
+    moisture: float  # volumetric water content (%)
+    ph: float  # pH scale 0-14
+    temperature: float  # °C
+    humidity: float  # relative humidity (%)
+    timestamp: float  # epoch seconds
     lat: Optional[float] = None
     lon: Optional[float] = None
 
@@ -62,14 +66,15 @@ class SoilReading:
 # ADS1115 ADC helper
 # ---------------------------------------------------------------------------
 
+
 class ADCReader:
     """Reads analog soil sensors through an ADS1115 4-channel ADC."""
 
     # Calibration constants — replace with your own measured values
-    MOISTURE_MIN_ADC = 10000   # ADC value in dry air
-    MOISTURE_MAX_ADC = 26000   # ADC value in water
-    PH_OFFSET = 0.0           # voltage offset calibration
-    PH_SLOPE = -5.7            # mV per pH unit (typical for SEN0161)
+    MOISTURE_MIN_ADC = 10000  # ADC value in dry air
+    MOISTURE_MAX_ADC = 26000  # ADC value in water
+    PH_OFFSET = 0.0  # voltage offset calibration
+    PH_SLOPE = -5.7  # mV per pH unit (typical for SEN0161)
 
     def __init__(self, address: int = 0x48, busnum: int = 1, gain: int = 1):
         if _HAS_ADS:
@@ -84,9 +89,9 @@ class ADCReader:
             return self._simulated_moisture()
         raw = self._adc.read_adc(channel, gain=self._gain)
         # Linear mapping from ADC range to 0-100%
-        pct = (self.MOISTURE_MAX_ADC - raw) / (
-            self.MOISTURE_MAX_ADC - self.MOISTURE_MIN_ADC
-        ) * 100.0
+        pct = (
+            (self.MOISTURE_MAX_ADC - raw) / (self.MOISTURE_MAX_ADC - self.MOISTURE_MIN_ADC) * 100.0
+        )
         return max(0.0, min(100.0, pct))
 
     def read_ph(self, channel: int = 1) -> float:
@@ -111,6 +116,7 @@ class ADCReader:
 # Temperature reader (DS18B20 via 1-Wire sysfs)
 # ---------------------------------------------------------------------------
 
+
 class TemperatureReader:
     """Reads DS18B20 temperature sensor via the Linux 1-Wire interface."""
 
@@ -123,6 +129,7 @@ class TemperatureReader:
         """Return temperature in °C."""
         try:
             import glob
+
             if self._device_id is None:
                 devices = glob.glob(f"{self.DEVICE_PATH}28-*/w1_slave")
                 if not devices:
@@ -148,6 +155,7 @@ class TemperatureReader:
 # ---------------------------------------------------------------------------
 # Humidity reader (SHT31 I2C)
 # ---------------------------------------------------------------------------
+
 
 class HumidityReader:
     """Reads SHT31 temperature + humidity sensor over I2C."""
@@ -176,6 +184,7 @@ class HumidityReader:
 # ---------------------------------------------------------------------------
 # Unified sensor reader
 # ---------------------------------------------------------------------------
+
 
 class SoilSensorReader:
     """High-level interface that aggregates all soil sensors.

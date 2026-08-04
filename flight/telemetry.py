@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from pymavlink import mavutil  # type: ignore[import-untyped]
+
     _HAS_MAVLINK = True
 except ImportError:
     _HAS_MAVLINK = False
@@ -29,13 +30,14 @@ except ImportError:
 # Vehicle state container
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class GPSPosition:
-    lat: float = 0.0          # degrees (WGS-84)
-    lon: float = 0.0          # degrees
-    alt_msl: float = 0.0      # metres above mean sea level
-    alt_rel: float = 0.0      # metres above home position
-    fix_type: int = 0         # 0=no fix, 2=2D, 3=3D, 4=DGPS, 5=RTK
+    lat: float = 0.0  # degrees (WGS-84)
+    lon: float = 0.0  # degrees
+    alt_msl: float = 0.0  # metres above mean sea level
+    alt_rel: float = 0.0  # metres above home position
+    fix_type: int = 0  # 0=no fix, 2=2D, 3=3D, 4=DGPS, 5=RTK
     satellites: int = 0
     hdop: float = 99.99
     timestamp: float = 0.0
@@ -43,7 +45,7 @@ class GPSPosition:
 
 @dataclass
 class Attitude:
-    roll: float = 0.0         # radians
+    roll: float = 0.0  # radians
     pitch: float = 0.0
     yaw: float = 0.0
     rollspeed: float = 0.0
@@ -54,29 +56,31 @@ class Attitude:
 
 @dataclass
 class BatteryState:
-    voltage: float = 0.0      # volts
-    current: float = 0.0      # amps
-    remaining: int = -1       # percent (−1 = unknown)
+    voltage: float = 0.0  # volts
+    current: float = 0.0  # amps
+    remaining: int = -1  # percent (−1 = unknown)
     timestamp: float = 0.0
 
 
 @dataclass
 class VehicleState:
     """Thread-safe snapshot of the latest telemetry."""
+
     gps: GPSPosition = field(default_factory=GPSPosition)
     attitude: Attitude = field(default_factory=Attitude)
     battery: BatteryState = field(default_factory=BatteryState)
     armed: bool = False
     flight_mode: str = "UNKNOWN"
-    heading: float = 0.0       # degrees 0–360
-    groundspeed: float = 0.0   # m/s
-    airspeed: float = 0.0      # m/s
+    heading: float = 0.0  # degrees 0–360
+    groundspeed: float = 0.0  # m/s
+    airspeed: float = 0.0  # m/s
     last_update: float = 0.0
 
 
 # ---------------------------------------------------------------------------
 # Telemetry listener
 # ---------------------------------------------------------------------------
+
 
 class TelemetryListener:
     """Background telemetry reader that populates a ``VehicleState``.
@@ -91,6 +95,7 @@ class TelemetryListener:
 
     def __init__(self, mavlink_client, *, update_rate_hz: float = 50.0):
         from flight.mavlink_client import MAVLinkClient
+
         self._client: MAVLinkClient = mavlink_client
         self._rate = 1.0 / update_rate_hz
         self._state = VehicleState()
@@ -111,7 +116,9 @@ class TelemetryListener:
     def start(self) -> None:
         self._running = True
         self._thread = threading.Thread(
-            target=self._loop, daemon=True, name="telemetry-listener",
+            target=self._loop,
+            daemon=True,
+            name="telemetry-listener",
         )
         self._thread.start()
         logger.info("Telemetry listener started (%.0f Hz)", 1.0 / self._rate)
@@ -154,9 +161,13 @@ class TelemetryListener:
 
             elif msg_type == "ATTITUDE":
                 self._state.attitude = Attitude(
-                    roll=msg.roll, pitch=msg.pitch, yaw=msg.yaw,
-                    rollspeed=msg.rollspeed, pitchspeed=msg.pitchspeed,
-                    yawspeed=msg.yawspeed, timestamp=now,
+                    roll=msg.roll,
+                    pitch=msg.pitch,
+                    yaw=msg.yaw,
+                    rollspeed=msg.rollspeed,
+                    pitchspeed=msg.pitchspeed,
+                    yawspeed=msg.yawspeed,
+                    timestamp=now,
                 )
 
             elif msg_type == "SYS_STATUS":

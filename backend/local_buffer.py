@@ -54,6 +54,7 @@ CREATE INDEX IF NOT EXISTS idx_timestamp ON readings (timestamp);
 # Buffer database
 # ---------------------------------------------------------------------------
 
+
 class LocalBuffer:
     """SQLite buffer for offline data persistence.
 
@@ -152,14 +153,13 @@ class LocalBuffer:
     @property
     def pending_count(self) -> int:
         with sqlite3.connect(self.db_path) as conn:
-            return conn.execute(
-                "SELECT COUNT(*) FROM readings WHERE synced = 0"
-            ).fetchone()[0]
+            return conn.execute("SELECT COUNT(*) FROM readings WHERE synced = 0").fetchone()[0]
 
 
 # ---------------------------------------------------------------------------
 # Background sync worker
 # ---------------------------------------------------------------------------
+
 
 class SyncWorker:
     """Pushes un-synced readings to the remote backend.
@@ -189,7 +189,9 @@ class SyncWorker:
     def start(self) -> None:
         self._running = True
         self._thread = threading.Thread(
-            target=self._loop, daemon=True, name="sync-worker",
+            target=self._loop,
+            daemon=True,
+            name="sync-worker",
         )
         self._thread.start()
         logger.info("Sync worker started (→ %s, every %.0fs)", self._url, self._interval)
@@ -227,6 +229,7 @@ class SyncWorker:
     def _get_api_key() -> str:
         """Load the API key from environment or config."""
         import os
+
         return os.environ.get("NDVI_API_KEY", "dev-key-change-me")
 
     def __enter__(self):

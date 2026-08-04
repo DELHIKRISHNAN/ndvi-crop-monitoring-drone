@@ -39,7 +39,9 @@ def generate_launch_description():
     # --- Gazebo Ignition ----------------------------------------------------
     gz_sim = ExecuteProcess(
         cmd=[
-            "gz", "sim", "-r",
+            "gz",
+            "sim",
+            "-r",
             LaunchConfiguration("world"),
         ],
         output="screen",
@@ -71,10 +73,12 @@ def generate_launch_description():
         ],
     )
 
-    return LaunchDescription([
-        world_arg,
-        use_sim_time_arg,
-        gz_sim,
-        ros_gz_bridge,
-        pid_node,
-    ])
+    return LaunchDescription(
+        [
+            world_arg,
+            use_sim_time_arg,
+            gz_sim,
+            ros_gz_bridge,
+            pid_node,
+        ]
+    )

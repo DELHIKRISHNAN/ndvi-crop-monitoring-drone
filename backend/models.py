@@ -16,8 +16,10 @@ from sqlmodel import Field, SQLModel, Relationship
 # Core tables
 # ---------------------------------------------------------------------------
 
+
 class Field_area(SQLModel, table=True):
     """A monitored agricultural field / zone."""
+
     __tablename__ = "fields"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -34,6 +36,7 @@ class Field_area(SQLModel, table=True):
 
 class Reading(SQLModel, table=True):
     """A single geotagged data point (NDVI + soil sensors)."""
+
     __tablename__ = "readings"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -57,8 +60,8 @@ class Reading(SQLModel, table=True):
     soil_humidity: Optional[float] = None
 
     # Metadata
-    stress_zones_json: Optional[str] = None   # JSON blob
-    frame_url: Optional[str] = None           # URL / path to false-color image
+    stress_zones_json: Optional[str] = None  # JSON blob
+    frame_url: Optional[str] = None  # URL / path to false-color image
     timestamp: datetime = Field(default_factory=datetime.utcnow, index=True)
 
     # Relationships
@@ -67,13 +70,14 @@ class Reading(SQLModel, table=True):
 
 class Alert(SQLModel, table=True):
     """Auto-generated alert when stress zones are detected."""
+
     __tablename__ = "alerts"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     field_id: Optional[int] = Field(default=None, foreign_key="fields.id", index=True)
     reading_id: Optional[int] = Field(default=None, foreign_key="readings.id")
 
-    severity: str = "moderate"   # "moderate" | "severe"
+    severity: str = "moderate"  # "moderate" | "severe"
     message: str = ""
     lat: float = 0.0
     lon: float = 0.0
@@ -86,8 +90,10 @@ class Alert(SQLModel, table=True):
 # Pydantic schemas (non-table models for request/response)
 # ---------------------------------------------------------------------------
 
+
 class ReadingCreate(SQLModel):
     """Schema for POST /api/readings."""
+
     lat: float
     lon: float
     alt: float = 0.0
@@ -107,6 +113,7 @@ class ReadingCreate(SQLModel):
 
 class ReadingResponse(SQLModel):
     """Schema for GET /api/readings responses."""
+
     id: int
     lat: float
     lon: float
@@ -126,6 +133,7 @@ class ReadingResponse(SQLModel):
 
 class AlertResponse(SQLModel):
     """Schema for GET /api/alerts responses."""
+
     id: int
     severity: str
     message: str
@@ -139,6 +147,7 @@ class AlertResponse(SQLModel):
 
 class FieldCreate(SQLModel):
     """Schema for POST /api/fields."""
+
     name: str
     description: str = ""
     lat_center: float = 0.0

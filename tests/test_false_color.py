@@ -16,7 +16,6 @@ from vision.false_color import (
 
 
 class TestNormalizeNDVI:
-
     def test_minus_one_maps_to_zero(self):
         arr = np.array([-1.0], dtype=np.float32)
         result = normalize_ndvi(arr)
@@ -34,7 +33,6 @@ class TestNormalizeNDVI:
 
 
 class TestApplyFalseColor:
-
     def test_output_shape_and_dtype(self):
         ndvi = np.random.uniform(-1, 1, (50, 50)).astype(np.float32)
         colored = apply_false_color(ndvi)
@@ -49,7 +47,6 @@ class TestApplyFalseColor:
 
 
 class TestCreateLegend:
-
     def test_legend_dimensions(self):
         legend = create_legend(height=200, width=40)
         assert legend.shape[0] == 200
@@ -58,7 +55,6 @@ class TestCreateLegend:
 
 
 class TestOverlay:
-
     def test_overlay_blending(self):
         rgb = np.full((30, 30, 3), 128, dtype=np.uint8)
         ndvi = np.random.uniform(-1, 1, (30, 30)).astype(np.float32)

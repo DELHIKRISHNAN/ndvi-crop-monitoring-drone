@@ -89,6 +89,7 @@ def verify_api_key(x_api_key: str = Header(...)) -> str:
 # Readings endpoints
 # ---------------------------------------------------------------------------
 
+
 @app.post(
     "/api/readings",
     response_model=ReadingResponse,
@@ -160,6 +161,7 @@ def list_readings(
 # ---------------------------------------------------------------------------
 # Fields endpoints
 # ---------------------------------------------------------------------------
+
 
 @app.post(
     "/api/fields",
@@ -237,6 +239,7 @@ def get_field_soil(
 # Alerts endpoints
 # ---------------------------------------------------------------------------
 
+
 @app.get("/api/alerts", response_model=List[AlertResponse], tags=["alerts"])
 def list_alerts(
     acknowledged: Optional[bool] = None,
@@ -268,6 +271,7 @@ def acknowledge_alert(
 # Health check
 # ---------------------------------------------------------------------------
 
+
 @app.get("/api/health", tags=["system"])
 def health_check():
     return {"status": "ok", "service": "ndvi-drone-api"}
@@ -276,6 +280,7 @@ def health_check():
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+
 
 def _maybe_create_alerts(reading: Reading, session: Session) -> None:
     """Parse stress_zones_json and auto-create alerts for severe zones."""
