@@ -4,18 +4,16 @@ Tests for vision/classify.py
 """
 
 import numpy as np
-import pytest
 
 from vision.classify import (
-    NDVIThresholds,
     HealthLabel,
+    NDVIThresholds,
     classify_ndvi,
     detect_stress_zones,
 )
 
 
 class TestClassifyNDVI:
-
     def test_default_thresholds_healthy(self):
         """NDVI > 0.5 everywhere → all pixels classified as healthy (2)."""
         ndvi = np.full((20, 20), 0.7, dtype=np.float32)
@@ -43,9 +41,9 @@ class TestClassifyNDVI:
     def test_mixed_zones(self):
         """Array with different regions should produce a mixed mask."""
         ndvi = np.zeros((30, 30), dtype=np.float32)
-        ndvi[:10, :] = 0.1   # severe
+        ndvi[:10, :] = 0.1  # severe
         ndvi[10:20, :] = 0.3  # moderate
-        ndvi[20:, :] = 0.8   # healthy
+        ndvi[20:, :] = 0.8  # healthy
         mask = classify_ndvi(ndvi)
         assert np.all(mask[:10, :] == 0)
         assert np.all(mask[10:20, :] == 1)
@@ -53,7 +51,6 @@ class TestClassifyNDVI:
 
 
 class TestDetectStressZones:
-
     def test_no_stress_returns_empty(self):
         ndvi = np.full((50, 50), 0.8, dtype=np.float32)
         zones = detect_stress_zones(ndvi)

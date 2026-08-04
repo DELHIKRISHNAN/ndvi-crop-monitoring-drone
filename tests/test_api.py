@@ -4,12 +4,13 @@ Tests for backend/main.py (FastAPI endpoints)
 Uses httpx.AsyncClient with ASGITransport for FastAPI testing.
 """
 
-import pytest
 import httpx
-
-from backend.main import app, API_KEY
-from backend.database import init_db, engine
+import pytest
 from sqlmodel import SQLModel
+
+from backend.database import engine, init_db
+from backend.main import API_KEY, app
+
 
 @pytest.fixture(autouse=True)
 def setup_db():
@@ -38,7 +39,6 @@ def auth_headers():
 
 @pytest.mark.anyio
 class TestHealthEndpoint:
-
     async def test_health_check(self, client):
         resp = await client.get("/api/health")
         assert resp.status_code == 200
@@ -47,11 +47,14 @@ class TestHealthEndpoint:
 
 @pytest.mark.anyio
 class TestReadingsEndpoints:
-
     async def test_create_reading_requires_auth(self, client):
-        resp = await client.post("/api/readings", json={
-            "lat": 28.6, "lon": 77.2,
-        })
+        resp = await client.post(
+            "/api/readings",
+            json={
+                "lat": 28.6,
+                "lon": 77.2,
+            },
+        )
         # Should fail with 403 (no API key) or 422 (validation)
         assert resp.status_code in (403, 422)
 
@@ -74,13 +77,16 @@ class TestReadingsEndpoints:
 
 @pytest.mark.anyio
 class TestFieldsEndpoints:
-
     async def test_create_field(self, client, auth_headers):
-        resp = await client.post("/api/fields", json={
-            "name": "Test Field A",
-            "lat_center": 28.5,
-            "lon_center": 77.1,
-        }, headers=auth_headers)
+        resp = await client.post(
+            "/api/fields",
+            json={
+                "name": "Test Field A",
+                "lat_center": 28.5,
+                "lon_center": 77.1,
+            },
+            headers=auth_headers,
+        )
         assert resp.status_code == 201
 
     async def test_list_fields(self, client):
@@ -90,7 +96,6 @@ class TestFieldsEndpoints:
 
 @pytest.mark.anyio
 class TestAlertsEndpoints:
-
     async def test_list_alerts(self, client):
         resp = await client.get("/api/alerts")
         assert resp.status_code == 200

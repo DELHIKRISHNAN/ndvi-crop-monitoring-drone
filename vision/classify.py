@@ -7,16 +7,15 @@ and detects contiguous stress zones suitable for alert generation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
 
 import cv2
 import numpy as np
 
-
 # ---------------------------------------------------------------------------
 # Default calibration thresholds (override per field / growing season)
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class NDVIThresholds:
@@ -26,13 +25,15 @@ class NDVIThresholds:
     the vegetative growth stage.  **Calibrate** against ground-truth data
     from your actual test field before relying on alerts.
     """
-    severe_stress: float = 0.2   # NDVI < this → bare soil / severe stress
+
+    severe_stress: float = 0.2  # NDVI < this → bare soil / severe stress
     moderate_stress: float = 0.5  # severe_stress ≤ NDVI < this → moderate
     # NDVI ≥ moderate_stress → healthy
 
 
 class HealthLabel:
     """String constants for classification labels."""
+
     SEVERE = "severe_stress"
     MODERATE = "moderate_stress"
     HEALTHY = "healthy"
@@ -41,6 +42,7 @@ class HealthLabel:
 # ---------------------------------------------------------------------------
 # Per-pixel classification
 # ---------------------------------------------------------------------------
+
 
 def classify_ndvi(
     ndvi_array: np.ndarray,
@@ -66,9 +68,11 @@ def classify_ndvi(
 # Stress-zone detection (contiguous regions)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class StressZone:
     """A single contiguous region of stressed vegetation."""
+
     label: str
     area_pixels: int
     centroid_x: float
@@ -82,7 +86,7 @@ def detect_stress_zones(
     thresholds: NDVIThresholds | None = None,
     *,
     min_area_pixels: int = 100,
-) -> List[StressZone]:
+) -> list[StressZone]:
     """Find contiguous stress zones in an NDVI array.
 
     Parameters
@@ -103,12 +107,14 @@ def detect_stress_zones(
         thresholds = NDVIThresholds()
 
     mask = classify_ndvi(ndvi_array, thresholds)
-    zones: List[StressZone] = []
+    zones: list[StressZone] = []
 
     for class_id, label in [(0, HealthLabel.SEVERE), (1, HealthLabel.MODERATE)]:
         binary = (mask == class_id).astype(np.uint8) * 255
         contours, _ = cv2.findContours(
-            binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE,
+            binary,
+            cv2.RETR_EXTERNAL,
+            cv2.CHAIN_APPROX_SIMPLE,
         )
         for cnt in contours:
             area = cv2.contourArea(cnt)
@@ -127,14 +133,16 @@ def detect_stress_zones(
             cv2.drawContours(contour_mask, [cnt], -1, (255,), -1)
             mean_val = cv2.mean(ndvi_array, mask=contour_mask)[0]
 
-            zones.append(StressZone(
-                label=label,
-                area_pixels=int(area),
-                centroid_x=cx,
-                centroid_y=cy,
-                bounding_box=bbox,
-                mean_ndvi=mean_val,
-            ))
+            zones.append(
+                StressZone(
+                    label=label,
+                    area_pixels=int(area),
+                    centroid_x=cx,
+                    centroid_y=cy,
+                    bounding_box=bbox,
+                    mean_ndvi=mean_val,
+                )
+            )
 
     zones.sort(key=lambda z: z.area_pixels, reverse=True)
     return zones

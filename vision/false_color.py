@@ -15,15 +15,16 @@ import numpy as np
 
 class Palette(str, Enum):
     """Supported colormap presets."""
-    JET = "jet"           # Classic rainbow (red-hot = high NDVI)
+
+    JET = "jet"  # Classic rainbow (red-hot = high NDVI)
     RD_YL_GN = "rdylgn"  # Red → Yellow → Green (intuitive for crop health)
-    INFERNO = "inferno"   # Perceptually uniform, good for papers
+    INFERNO = "inferno"  # Perceptually uniform, good for papers
 
 
 # Mapping from our palette names to OpenCV colormap constants
 _CV_COLORMAPS = {
     Palette.JET: cv2.COLORMAP_JET,
-    Palette.RD_YL_GN: cv2.COLORMAP_HSV,   # closest built-in approximation
+    Palette.RD_YL_GN: cv2.COLORMAP_HSV,  # closest built-in approximation
     Palette.INFERNO: cv2.COLORMAP_INFERNO,
 }
 
