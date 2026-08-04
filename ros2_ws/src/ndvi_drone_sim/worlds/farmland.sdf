@@ -1,0 +1,157 @@
+<?xml version="1.0" ?>
+<!--
+  Farmland Simulation World
+  =========================
+  Flat terrain with simulated crop stress zones for NDVI drone testing.
+  Designed for Ignition Gazebo (gz-sim) via the ros_gz bridge.
+
+  Stress zones are represented as colored patches on the ground plane:
+  - Green patches:  healthy vegetation (NDVI > 0.5)
+  - Yellow patches: moderate stress (0.2 ≤ NDVI < 0.5)
+  - Brown patches:  severe stress / bare soil (NDVI < 0.2)
+-->
+<sdf version="1.9">
+  <world name="farmland">
+
+    <!-- Physics -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Plugins -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat"/>
+
+    <!-- Lighting -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 100 0 0 0</pose>
+      <diffuse>0.9 0.9 0.85 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.45 0.35 0.2 1</ambient>
+            <diffuse>0.5 0.4 0.25 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Healthy crop zone (large green patch) -->
+    <model name="healthy_zone_1">
+      <static>true</static>
+      <pose>10 10 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>30 30 0.01</size></box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.6 0.1 1</ambient>
+            <diffuse>0.15 0.7 0.15 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Moderate stress zone (yellow patch) -->
+    <model name="moderate_stress_zone">
+      <static>true</static>
+      <pose>-15 5 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>15 12 0.01</size></box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.65 0.1 1</ambient>
+            <diffuse>0.85 0.8 0.15 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Severe stress zone (brown/bare patch) -->
+    <model name="severe_stress_zone">
+      <static>true</static>
+      <pose>20 -20 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>10 10 0.01</size></box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.3 0.1 1</ambient>
+            <diffuse>0.6 0.35 0.15 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Healthy crop zone 2 -->
+    <model name="healthy_zone_2">
+      <static>true</static>
+      <pose>-20 -15 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>25 20 0.01</size></box>
+          </geometry>
+          <material>
+            <ambient>0.08 0.55 0.08 1</ambient>
+            <diffuse>0.12 0.65 0.12 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Drone spawn pose (takeoff point) -->
+    <model name="spawn_marker">
+      <static>true</static>
+      <pose>0 0 0.05 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>0.05</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.9 0.1 0.1 1</ambient>
+            <diffuse>1.0 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

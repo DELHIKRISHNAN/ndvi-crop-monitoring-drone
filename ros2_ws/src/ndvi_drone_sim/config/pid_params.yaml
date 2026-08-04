@@ -1,0 +1,30 @@
+# PID Tuning Parameters
+# =====================
+# Loaded by the pid_tuning_node at launch time.
+# Tune these against the Gazebo simulation before deploying to hardware.
+
+pid_tuning_node:
+  ros__parameters:
+    # --- Roll axis ---
+    kp_roll: 1.2
+    ki_roll: 0.01
+    kd_roll: 0.3
+
+    # --- Pitch axis ---
+    kp_pitch: 1.2
+    ki_pitch: 0.01
+    kd_pitch: 0.3
+
+    # --- Yaw axis ---
+    kp_yaw: 0.8
+    ki_yaw: 0.005
+    kd_yaw: 0.1
+
+    # --- Altitude ---
+    kp_altitude: 1.5
+    ki_altitude: 0.05
+    kd_altitude: 0.4
+
+    # --- Targets ---
+    target_altitude: 10.0   # metres AGL
+    control_rate_hz: 50.0

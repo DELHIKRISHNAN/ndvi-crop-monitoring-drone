@@ -1,0 +1,32 @@
+# ===========================================================
+# NDVI Drone — Python Dependencies
+# ===========================================================
+# Core (always needed)
+numpy>=1.24,<2.0
+opencv-python-headless>=4.8
+Pillow>=10.0
+
+# Flight interface (Pi companion computer only)
+pymavlink>=2.4.40
+# mavsdk>=1.4    # uncomment if using MAVSDK instead of pymavlink
+
+# Sensors (Pi only — commented out for dev machines)
+# smbus2>=0.4
+# Adafruit-ADS1x15>=1.0
+# RPi.GPIO>=0.7
+# adafruit-circuitpython-pca9685>=3.4
+
+# Camera (Pi only)
+# picamera2>=0.3
+
+# Backend API
+fastapi>=0.110
+uvicorn[standard]>=0.27
+sqlmodel>=0.0.16
+pydantic>=2.5
+
+# Local buffer sync
+requests>=2.31
+
+# Utilities
+python-dotenv>=1.0
