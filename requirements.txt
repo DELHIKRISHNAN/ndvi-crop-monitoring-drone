@@ -30,3 +30,8 @@ requests>=2.31
 
 # Utilities
 python-dotenv>=1.0
+
+# Quadruped Hardware
+adafruit-circuitpython-pca9685>=3.4
+mpu6050-raspberrypi>=1.2
+pygame>=2.5.0

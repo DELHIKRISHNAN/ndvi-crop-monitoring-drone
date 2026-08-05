@@ -71,6 +71,10 @@ ndvi-drone/
 │   └── ndvi_drone_sim/
 │       └── pid_tuning_node.py   # PID attitude + altitude controller
 │
+├── quadruped/                   # Hardware closed-loop walking algorithms
+│   ├── closed_loop.py           # Core logic (Simulation)
+│   └── hardware_closed_loop.py  # Production hardware loop (PCA9685, IMU, Pygame)
+│
 ├── dashboard/                   # React frontend (see dashboard/README.md)
 ├── tests/                       # pytest test suite
 ├── .github/workflows/test.yml   # CI pipeline
@@ -79,9 +83,11 @@ ndvi-drone/
 └── pyproject.toml               # Project metadata & tool config
 ```
 
-## Quick Start
+## 🚀 Quick Start & Manual Configuration
 
-### 1. Clone & install
+After cloning the repository, there are a few manual steps required to fully configure the ecosystem across the Backend, Frontend Dashboard, and Hardware systems.
+
+### 1. System Setup (Backend & Core)
 
 ```bash
 git clone https://github.com/yourusername/ndvi-drone.git
@@ -92,34 +98,56 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-### 2. Run tests
+**⚠️ Manual Configuration Step:**
+You must configure your environment variables for the database and hardware interfaces.
+1. Copy the example file: `cp .env.example .env`
+2. Open `.env` and change `NDVI_API_KEY=dev-key-change-me` to a secure custom password. You will use this key when sending live flight data.
 
+To start the backend API:
 ```bash
-pytest
+uvicorn backend.main:app --host 127.0.0.1 --port 8080 --reload
 ```
+*API docs will be available at `http://localhost:8080/docs`*
 
-### 3. Start the backend API
+### 2. Frontend Dashboard Setup (React)
 
+To run the beautiful glassmorphism React dashboard, you must have **Node.js** installed on your system.
+1. Navigate to the dashboard folder: `cd dashboard`
+2. Install Javascript dependencies: `npm install`
+3. Start the Vite development server: `npm run dev`
+
+**⚠️ Manual Configuration Step:**
+If you changed the port of your FastAPI backend (e.g. to 8080), you must manually update the dashboard proxy settings.
+Open `dashboard/vite.config.js` and change `target: 'http://localhost:8000'` to point to your new backend port.
+
+### 3. Run the Aerial Mission Simulator
+
+To generate test data without flying the drone, run the mission orchestrator in simulation mode in a new terminal:
 ```bash
-cp .env.example .env
-uvicorn backend.main:app --reload
+python -m main --simulate --backend-url http://127.0.0.1:8080/api/readings
 ```
+This will generate simulated GPS coordinates, plant health data, and soil metrics, pushing them locally to your running backend.
 
-API docs available at `http://localhost:8000/docs`
+### 4. 🤖 Quadruped Robot Configuration (Closed-Loop Hardware)
 
-### 4. Run the mission controller (simulated mode)
+If you are deploying the **Quadruped Legged Robot** submodule, there is strict physical hardware configuration required before running.
 
+**Hardware Setup:**
+* Connect a PCA9685 Servo Driver to the I2C pins of your Raspberry Pi (Provide external 5V power to the PCA9685!).
+* Connect an MPU6050 IMU to the I2C pins.
+* Plug in a generic USB or Bluetooth Joystick for movement control.
+
+**⚠️ Manual Configuration Step:**
+Cheap servos are never perfectly centered out of the box. Before executing a gait, you **MUST** zero your servos.
+1. Open `quadruped/hardware_closed_loop.py`
+2. Locate the `self.offsets = { ... }` dictionary around line 50.
+3. Turn on the robot and observe how the legs sit in the "rest" position.
+4. Tweak the offset values (e.g. `+5.0` or `-3.5` degrees) until every single leg is perfectly perpendicular/level.
+5. If the robot jitters violently or falls over, you must tune the PID values located at `self.pitch_pid = PIDController(...)`.
+
+To run the quadruped with joystick control:
 ```bash
-python -m main --simulate
-```
-
-### 5. Run the ROS 2 simulation
-
-```bash
-cd ros2_ws
-colcon build --packages-select ndvi_drone_sim
-source install/setup.bash
-ros2 launch ndvi_drone_sim sim_launch.py
+python quadruped/hardware_closed_loop.py
 ```
 
 **Drone Image (Work in Progress)**
@@ -184,7 +212,3 @@ All write endpoints require an `X-API-Key` header.
 - Environment-based secrets management (`.env`)
 - Input validation via Pydantic models
 - CORS restricted to known dashboard origins
-
-## License
-
-MIT
