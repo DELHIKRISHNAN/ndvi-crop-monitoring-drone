@@ -25,8 +25,10 @@ from mpu6050 import mpu6050
 # 1. HARDWARE INTERFACE (SERVOS & IMU)
 # ==========================================
 
+
 class ServoController:
     """Manages the PCA9685 board and handles angle-to-PWM conversions"""
+
     def __init__(self, i2c_address=0x40, frequency=50):
         i2c = busio.I2C(board.SCL, board.SDA)
         self.pca = PCA9685(i2c, address=i2c_address)
@@ -51,10 +53,14 @@ class ServoController:
 
         # Calibration offsets (Degrees to add/subtract to center cheap servos)
         self.offsets = {
-            "FL_HIP": 0.0, "FL_KNEE": 0.0,
-            "FR_HIP": 0.0, "FR_KNEE": 0.0,
-            "BL_HIP": 0.0, "BL_KNEE": 0.0,
-            "BR_HIP": 0.0, "BR_KNEE": 0.0,
+            "FL_HIP": 0.0,
+            "FL_KNEE": 0.0,
+            "FR_HIP": 0.0,
+            "FR_KNEE": 0.0,
+            "BL_HIP": 0.0,
+            "BL_KNEE": 0.0,
+            "BR_HIP": 0.0,
+            "BR_KNEE": 0.0,
         }
 
     def set_angle(self, joint_name, angle):
@@ -69,8 +75,10 @@ class ServoController:
         except Exception as e:
             print(f"Error setting {joint_name} to {target_angle}: {e}")
 
+
 class IMUController:
     """Reads Pitch and Roll from the MPU6050 accelerometer/gyro"""
+
     def __init__(self, i2c_address=0x68):
         try:
             self.sensor = mpu6050(i2c_address)
@@ -86,12 +94,12 @@ class IMUController:
 
         try:
             accel_data = self.sensor.get_accel_data()
-            x = accel_data['x']
-            y = accel_data['y']
-            z = accel_data['z']
+            x = accel_data["x"]
+            y = accel_data["y"]
+            z = accel_data["z"]
 
             # Calculate Pitch and Roll from gravity vector
-            pitch = math.degrees(math.atan2(y, math.sqrt(x*x + z*z)))
+            pitch = math.degrees(math.atan2(y, math.sqrt(x * x + z * z)))
             roll = math.degrees(math.atan2(-x, z))
             return pitch, roll
         except Exception:
@@ -101,6 +109,7 @@ class IMUController:
 # ==========================================
 # 2. ALGORITHM LOGIC (PID, IK, GAIT)
 # ==========================================
+
 
 class PIDController:
     def __init__(self, kp, ki, kd, setpoint=0.0):
@@ -129,6 +138,7 @@ class PIDController:
         self.prev_error = error
         self.last_time = now
         return output
+
 
 class LegIK:
     def __init__(self, hip_length=50.0, knee_length=50.0):
@@ -159,6 +169,7 @@ class LegIK:
 # 3. MAIN ROBOT CONTROLLER
 # ==========================================
 
+
 class QuadrupedRobot:
     def __init__(self):
         # Initialize Hardware
@@ -188,11 +199,11 @@ class QuadrupedRobot:
 
     def get_trot_trajectory(self, phase, step_length):
         """Generates raw X, Z foot coordinates for a given phase (0.0 to 1.0) and step length"""
-        if phase < 0.5: # Swing
+        if phase < 0.5:  # Swing
             t = phase * 2.0
             x = -step_length / 2.0 + (step_length * t)
             z = self.BASE_HEIGHT - (math.sin(t * math.pi) * self.STEP_HEIGHT)
-        else: # Stance
+        else:  # Stance
             t = (phase - 0.5) * 2.0
             x = step_length / 2.0 - (step_length * t)
             z = self.BASE_HEIGHT
@@ -220,7 +231,7 @@ class QuadrupedRobot:
                     pygame.event.pump()
                     # Axis 1 = Left Stick Y (Up/Down) -> Forward speed
                     # Axis 3 = Right Stick X (Left/Right) -> Turn (may vary by controller)
-                    forward_axis = -self.joystick.get_axis(1) # Invert so Up is positive
+                    forward_axis = -self.joystick.get_axis(1)  # Invert so Up is positive
                     turn_axis = self.joystick.get_axis(3)
 
                     # Apply small deadzone
@@ -239,8 +250,8 @@ class QuadrupedRobot:
                 current_phase = (current_phase + (forward_axis * 2.0 * dt)) % 1.0
 
                 # Diagonal pairs
-                phase_pair1 = current_phase                 # FL & BR
-                phase_pair2 = (current_phase + 0.5) % 1.0   # FR & BL
+                phase_pair1 = current_phase  # FL & BR
+                phase_pair2 = (current_phase + 0.5) % 1.0  # FR & BL
 
                 # 2. READ IMU
                 pitch, roll = self.imu.get_angles()
@@ -263,10 +274,10 @@ class QuadrupedRobot:
 
                 # 4. GENERATE BASE TRAJECTORY FOR EACH LEG
                 x_fl, z1 = self.get_trot_trajectory(phase_pair1, left_step_len)
-                x_br, _  = self.get_trot_trajectory(phase_pair1, right_step_len)
+                x_br, _ = self.get_trot_trajectory(phase_pair1, right_step_len)
 
                 x_fr, z2 = self.get_trot_trajectory(phase_pair2, right_step_len)
-                x_bl, _  = self.get_trot_trajectory(phase_pair2, left_step_len)
+                x_bl, _ = self.get_trot_trajectory(phase_pair2, left_step_len)
 
                 # 5. APPLY CORRECTIONS & CALCULATE IK FOR ALL 4 LEGS
 
@@ -317,6 +328,7 @@ class QuadrupedRobot:
                 self.servos.set_angle(f"{leg}_HIP", 180 - rest_hip)
                 self.servos.set_angle(f"{leg}_KNEE", 180 - rest_knee)
             time.sleep(1)
+
 
 if __name__ == "__main__":
     robot = QuadrupedRobot()
