@@ -184,11 +184,7 @@ Thresholds are configurable per field and growing season — see `vision/classif
 | Humidity | SHT31 (I2C) |
 | Servo driver | PCA9685 (I2C) |
 
-
-### Bot Moving
-<video src="./img/workingvdo.mp4" controls="controls" width="100%">
-  Your browser does not support the video tag. <a href="./img/workingvdo.mp4">Download Video</a>
-</video>
+![Drone Image](./img/workingvdo.mp4)
 
 
 ## API Endpoints
