@@ -14,7 +14,6 @@ import logging
 import threading
 import time
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +100,7 @@ class TelemetryListener:
         self._state = VehicleState()
         self._lock = threading.Lock()
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
 
     @property
     def state(self) -> VehicleState:

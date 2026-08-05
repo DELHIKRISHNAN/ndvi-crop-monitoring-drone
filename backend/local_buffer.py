@@ -16,7 +16,7 @@ import sqlite3
 import threading
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class LocalBuffer:
     # Insert
     # ------------------------------------------------------------------
 
-    def insert_reading(self, data: Dict[str, Any]) -> int:
+    def insert_reading(self, data: dict[str, Any]) -> int:
         """Insert a new reading and return its row ID.
 
         Expected ``data`` keys::
@@ -119,7 +119,7 @@ class LocalBuffer:
     # Query
     # ------------------------------------------------------------------
 
-    def get_unsynced(self, limit: int = 50) -> List[Dict[str, Any]]:
+    def get_unsynced(self, limit: int = 50) -> list[dict[str, Any]]:
         """Return up to ``limit`` un-synced readings."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
@@ -129,7 +129,7 @@ class LocalBuffer:
             ).fetchall()
             return [dict(row) for row in rows]
 
-    def mark_synced(self, row_ids: List[int]) -> None:
+    def mark_synced(self, row_ids: list[int]) -> None:
         """Mark the given rows as synced."""
         if not row_ids:
             return
@@ -140,7 +140,7 @@ class LocalBuffer:
                 row_ids,
             )
 
-    def get_all_readings(self, limit: int = 500) -> List[Dict[str, Any]]:
+    def get_all_readings(self, limit: int = 500) -> list[dict[str, Any]]:
         """Return recent readings (synced or not)."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
@@ -184,7 +184,7 @@ class SyncWorker:
         self._url = backend_url
         self._interval = interval
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
 
     def start(self) -> None:
         self._running = True

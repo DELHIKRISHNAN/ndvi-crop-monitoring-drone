@@ -4,8 +4,8 @@ Tests for backend/local_buffer.py
 """
 
 import time
+
 import pytest
-from pathlib import Path
 
 from backend.local_buffer import LocalBuffer
 

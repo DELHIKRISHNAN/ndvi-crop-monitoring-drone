@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import logging
 import signal
-import sys
 import time
 
 logging.basicConfig(
@@ -50,14 +49,14 @@ def parse_args():
 
 def run_mission(args):
     """Main mission loop."""
-    from vision.ndvi import compute_ndvi, compute_ndvi_stats
+    from pathlib import Path
+
+    from backend.local_buffer import LocalBuffer, SyncWorker
+    from sensors.soil_reader import SoilSensorReader
+    from vision.capture import DualCamera, save_frame_pair
     from vision.classify import detect_stress_zones
     from vision.false_color import apply_false_color
-    from vision.capture import DualCamera, save_frame_pair
-    from sensors.soil_reader import SoilSensorReader
-    from backend.local_buffer import LocalBuffer, SyncWorker
-    from pathlib import Path
-    import json
+    from vision.ndvi import compute_ndvi, compute_ndvi_stats
 
     logger.info("=" * 60)
     logger.info("  NDVI DRONE — Mission Controller")
@@ -81,9 +80,9 @@ def run_mission(args):
     telemetry_state = None
     if not args.ground_only:
         try:
+            from flight.failsafe import FailsafeManager
             from flight.mavlink_client import MAVLinkClient
             from flight.telemetry import TelemetryListener
-            from flight.failsafe import FailsafeManager, FailsafeConfig
 
             mavlink = MAVLinkClient(
                 connection_string=args.connection,

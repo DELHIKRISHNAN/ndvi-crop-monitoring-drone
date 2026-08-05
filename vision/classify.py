@@ -7,12 +7,10 @@ and detects contiguous stress zones suitable for alert generation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
 
 import cv2
 import numpy as np
-
 
 # ---------------------------------------------------------------------------
 # Default calibration thresholds (override per field / growing season)
@@ -88,7 +86,7 @@ def detect_stress_zones(
     thresholds: NDVIThresholds | None = None,
     *,
     min_area_pixels: int = 100,
-) -> List[StressZone]:
+) -> list[StressZone]:
     """Find contiguous stress zones in an NDVI array.
 
     Parameters
@@ -109,7 +107,7 @@ def detect_stress_zones(
         thresholds = NDVIThresholds()
 
     mask = classify_ndvi(ndvi_array, thresholds)
-    zones: List[StressZone] = []
+    zones: list[StressZone] = []
 
     for class_id, label in [(0, HealthLabel.SEVERE), (1, HealthLabel.MODERATE)]:
         binary = (mask == class_id).astype(np.uint8) * 255

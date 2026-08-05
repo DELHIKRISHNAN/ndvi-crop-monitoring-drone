@@ -28,8 +28,8 @@ from __future__ import annotations
 import math
 
 import rclpy
-from rclpy.node import Node
 from geometry_msgs.msg import Twist
+from rclpy.node import Node
 from sensor_msgs.msg import Imu, NavSatFix
 
 

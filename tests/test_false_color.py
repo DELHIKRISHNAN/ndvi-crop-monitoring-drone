@@ -4,13 +4,12 @@ Tests for vision/false_color.py
 """
 
 import numpy as np
-import pytest
 
 from vision.false_color import (
     Palette,
-    normalize_ndvi,
     apply_false_color,
     create_legend,
+    normalize_ndvi,
     overlay_ndvi_on_rgb,
 )
 

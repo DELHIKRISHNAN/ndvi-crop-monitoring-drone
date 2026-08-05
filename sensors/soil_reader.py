@@ -22,7 +22,6 @@ import logging
 import random
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +57,8 @@ class SoilReading:
     temperature: float  # °C
     humidity: float  # relative humidity (%)
     timestamp: float  # epoch seconds
-    lat: Optional[float] = None
-    lon: Optional[float] = None
+    lat: float | None = None
+    lon: float | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -122,7 +121,7 @@ class TemperatureReader:
 
     DEVICE_PATH = "/sys/bus/w1/devices/"
 
-    def __init__(self, device_id: Optional[str] = None):
+    def __init__(self, device_id: str | None = None):
         self._device_id = device_id
 
     def read(self) -> float:
@@ -203,8 +202,8 @@ class SoilSensorReader:
 
     def poll(
         self,
-        lat: Optional[float] = None,
-        lon: Optional[float] = None,
+        lat: float | None = None,
+        lon: float | None = None,
     ) -> SoilReading:
         """Take a single reading from all sensors.
 

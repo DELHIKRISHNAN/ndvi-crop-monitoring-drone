@@ -4,11 +4,10 @@ Tests for vision/classify.py
 """
 
 import numpy as np
-import pytest
 
 from vision.classify import (
-    NDVIThresholds,
     HealthLabel,
+    NDVIThresholds,
     classify_ndvi,
     detect_stress_zones,
 )

@@ -20,8 +20,8 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class FailsafeManager:
         mavlink_client,
         telemetry_listener,
         config: FailsafeConfig | None = None,
-        on_failsafe: Optional[Callable[[str], None]] = None,
+        on_failsafe: Callable[[str], None] | None = None,
     ):
         from flight.mavlink_client import MAVLinkClient
         from flight.telemetry import TelemetryListener
@@ -90,7 +90,7 @@ class FailsafeManager:
         self.config = config or FailsafeConfig()
         self._on_failsafe = on_failsafe
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._triggered: set = set()  # avoid repeated triggers
 
         # Wire link-loss callback into the MAVLink client

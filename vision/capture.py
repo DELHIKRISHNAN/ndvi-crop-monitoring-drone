@@ -21,9 +21,8 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -61,9 +60,9 @@ class FramePair:
     rgb: np.ndarray
     nir: np.ndarray
     timestamp: float  # time.time() epoch seconds
-    lat: Optional[float] = None
-    lon: Optional[float] = None
-    alt: Optional[float] = None
+    lat: float | None = None
+    lon: float | None = None
+    alt: float | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +78,7 @@ class DualCamera:
         *,
         rgb_source: int | str = 0,
         nir_source: int | str = 1,
-        resolution: Tuple[int, int] = (640, 480),
+        resolution: tuple[int, int] = (640, 480),
         use_hw_trigger: bool = False,
         trigger_pin: int = 17,
     ):
@@ -179,7 +178,7 @@ class DualCamera:
 # ---------------------------------------------------------------------------
 
 
-def save_frame_pair(pair: FramePair, output_dir: Path) -> Tuple[Path, Path]:
+def save_frame_pair(pair: FramePair, output_dir: Path) -> tuple[Path, Path]:
     """Write RGB and NIR frames as PNG files with timestamp-based names."""
     output_dir.mkdir(parents=True, exist_ok=True)
     stem = f"{pair.timestamp:.6f}"

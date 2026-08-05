@@ -22,13 +22,12 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 
-from backend.database import engine, get_session, init_db
+from backend.database import get_session, init_db
 from backend.models import (
     Alert,
     AlertResponse,
@@ -117,12 +116,12 @@ def create_reading(
 
 @app.post(
     "/api/readings/batch",
-    response_model=List[ReadingResponse],
+    response_model=list[ReadingResponse],
     status_code=status.HTTP_201_CREATED,
     tags=["readings"],
 )
 def create_readings_batch(
-    payloads: List[ReadingCreate],
+    payloads: list[ReadingCreate],
     session: Session = Depends(get_session),
     _key: str = Depends(verify_api_key),
 ):
@@ -142,12 +141,12 @@ def create_readings_batch(
 
 @app.get(
     "/api/readings",
-    response_model=List[ReadingResponse],
+    response_model=list[ReadingResponse],
     tags=["readings"],
 )
 def list_readings(
     limit: int = Query(100, ge=1, le=1000),
-    field_id: Optional[int] = None,
+    field_id: int | None = None,
     session: Session = Depends(get_session),
 ):
     """Return recent readings, optionally filtered by field."""
@@ -181,7 +180,7 @@ def create_field(
     return field
 
 
-@app.get("/api/fields", response_model=List[Field_area], tags=["fields"])
+@app.get("/api/fields", response_model=list[Field_area], tags=["fields"])
 def list_fields(session: Session = Depends(get_session)):
     return session.exec(select(Field_area)).all()
 
@@ -240,9 +239,9 @@ def get_field_soil(
 # ---------------------------------------------------------------------------
 
 
-@app.get("/api/alerts", response_model=List[AlertResponse], tags=["alerts"])
+@app.get("/api/alerts", response_model=list[AlertResponse], tags=["alerts"])
 def list_alerts(
-    acknowledged: Optional[bool] = None,
+    acknowledged: bool | None = None,
     limit: int = Query(50, ge=1, le=500),
     session: Session = Depends(get_session),
 ):

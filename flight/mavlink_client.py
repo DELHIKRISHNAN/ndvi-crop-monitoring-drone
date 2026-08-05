@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 import threading
 import time
-from typing import Callable, Optional
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -63,9 +63,9 @@ class MAVLinkClient:
 
         self._conn = None
         self._running = False
-        self._heartbeat_thread: Optional[threading.Thread] = None
+        self._heartbeat_thread: threading.Thread | None = None
         self._last_heartbeat: float = 0.0
-        self._on_link_lost: Optional[Callable] = None
+        self._on_link_lost: Callable | None = None
 
     # ------------------------------------------------------------------
     # Connection lifecycle

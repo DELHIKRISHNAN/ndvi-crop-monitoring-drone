@@ -4,12 +4,12 @@ Tests for backend/main.py (FastAPI endpoints)
 Uses httpx.AsyncClient with ASGITransport for FastAPI testing.
 """
 
-import pytest
 import httpx
-
-from backend.main import app, API_KEY
-from backend.database import init_db, engine
+import pytest
 from sqlmodel import SQLModel
+
+from backend.database import engine, init_db
+from backend.main import API_KEY, app
 
 
 @pytest.fixture(autouse=True)
