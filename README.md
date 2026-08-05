@@ -6,13 +6,10 @@ Built around a Pixhawk Cube Orange flight controller, Raspberry Pi 5 companion c
 
 ---
 
-## Gallery
 
 
+### Drone Image
 
-### Drone Images
-
-**Drone Image**
 ![Drone Image](./img/img_main.jpg)
 
 
