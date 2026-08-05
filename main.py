@@ -146,7 +146,7 @@ def run_mission(args):
                     zones = detect_stress_zones(ndvi)
 
                     # Save false-color frame
-                    colored = apply_false_color(ndvi)
+                    apply_false_color(ndvi)
                     rgb_path, nir_path = save_frame_pair(pair, output_dir)
 
                     # Buffer the reading
