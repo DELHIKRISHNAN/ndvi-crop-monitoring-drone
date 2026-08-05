@@ -87,7 +87,7 @@ After cloning the repository, there are a few manual steps required to fully con
 ### 1. System Setup (Backend & Core)
 
 ```bash
-git clone https://github.com/yourusername/ndvi-drone.git
+git clone https://github.com/DELHIKRISHNAN/ndvi-crop-monitoring-drone.git
 cd ndvi-drone
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
@@ -125,9 +125,11 @@ python -m main --simulate --backend-url http://127.0.0.1:8080/api/readings
 ```
 This will generate simulated GPS coordinates, plant health data, and soil metrics, pushing them locally to your running backend.
 
-### 4. 🤖 Quadruped Robot Configuration (Closed-Loop Hardware)
+### 4. 🤖 Quadruped Robot Configuration (Teleoperated Hardware)
 
-If you are deploying the **Quadruped Legged Robot** submodule, there is strict physical hardware configuration required before running.
+If you are deploying the **Quadruped Legged Robot** submodule, note that it is currently designed for **manual teleoperation** to navigate to stress zones, utilizing a robust closed-loop balance system (IMU + PID) to maintain posture. It does *not* navigate autonomously.
+
+There is strict physical hardware configuration required before running:
 
 **Hardware Setup:**
 * Connect a PCA9685 Servo Driver to the I2C pins of your Raspberry Pi (Provide external 5V power to the PCA9685!).
@@ -147,8 +149,8 @@ To run the quadruped with joystick control:
 python quadruped/hardware_closed_loop.py
 ```
 
-**Drone Image (Work in Progress)**
-![Drone Image (Not Fully Finished)](./img/img_prep.jpg)
+**Drone Ground Preparation**
+![Drone Ground Preparation](./img/img_prep.jpg)
 
 
 ## NDVI Algorithm
@@ -181,7 +183,7 @@ Thresholds are configurable per field and growing season — see `vision/classif
 | Humidity | SHT31 (I2C) |
 | Servo driver | PCA9685 (I2C) |
 
-![Drone Image](./img/workingvdo.mp4)
+[Watch the robot in action](./img/workingvdo.mp4)
 
 
 ## API Endpoints
