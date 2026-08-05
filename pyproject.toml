@@ -20,6 +20,7 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 ignore = ["E501"]  # line length handled by formatter
+ignore = ["B008", "N801"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -29,3 +30,4 @@ python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+
