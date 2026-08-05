@@ -13,7 +13,7 @@ Built around a Pixhawk Cube Orange flight controller, Raspberry Pi 5 companion c
 ### Drone Images
 
 **Drone Image**
-![Drone Image](img/img_main.jpg)
+![Drone Image](./img/img_main.jpg)
 
 
 
@@ -151,7 +151,7 @@ python quadruped/hardware_closed_loop.py
 ```
 
 **Drone Image (Work in Progress)**
-![Drone Image (Not Fully Finished)](img/img_prep.jpg)
+![Drone Image (Not Fully Finished)](./img/img_prep.jpg)
 
 
 ## NDVI Algorithm
@@ -186,8 +186,8 @@ Thresholds are configurable per field and growing season — see `vision/classif
 
 
 ### Bot Moving
-<video src="img/workingvdo.mp4" controls="controls" width="100%">
-  Your browser does not support the video tag. <a href="img/workingvdo.mp4">Download Video</a>
+<video src="./img/workingvdo.mp4" controls="controls" width="100%">
+  Your browser does not support the video tag. <a href="./img/workingvdo.mp4">Download Video</a>
 </video>
 
 
