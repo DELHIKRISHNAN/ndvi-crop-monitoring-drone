@@ -8,18 +8,14 @@ Built around a Pixhawk Cube Orange flight controller, Raspberry Pi 5 companion c
 
 ## Gallery
 
-### Bot Moving
-<video src="img/VID-20251008-WA0006.mp4" controls="controls" width="100%">
-  Your browser does not support the video tag. <a href="img/VID-20251008-WA0006.mp4">Download Video</a>
-</video>
+
 
 ### Drone Images
 
 **Drone Image**
-![Drone Image](img/IMG_3868.HEIC)
+![Drone Image](img/img_main.jpg)
 
-**Drone Image (Work in Progress)**
-![Drone Image (Not Fully Finished)](img/IMG_20251009_022551.jpg)
+
 
 ## System Architecture
 
@@ -126,6 +122,10 @@ source install/setup.bash
 ros2 launch ndvi_drone_sim sim_launch.py
 ```
 
+**Drone Image (Work in Progress)**
+![Drone Image (Not Fully Finished)](img/img_prep.jpg)
+
+
 ## NDVI Algorithm
 
 The core computation is straightforward:
@@ -155,6 +155,13 @@ Thresholds are configurable per field and growing season — see `vision/classif
 | Temperature | DS18B20 (1-Wire) |
 | Humidity | SHT31 (I2C) |
 | Servo driver | PCA9685 (I2C) |
+
+
+### Bot Moving
+<video src="img/workingvdo.mp4" controls="controls" width="100%">
+  Your browser does not support the video tag. <a href="img/workingvdo.mp4">Download Video</a>
+</video>
+
 
 ## API Endpoints
 
